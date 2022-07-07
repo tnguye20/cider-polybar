@@ -11,3 +11,5 @@ export const MEDIA_ICONS = {
     'default': '\uf880'
 };
 export const APP_NAME = "cider-polybar";
+
+export const INFORMATIVE_ACTIONS = ["playpause", "play", "pause", "next", "previous", "get-currentmediaitem", "volume"];
