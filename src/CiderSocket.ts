@@ -101,8 +101,12 @@ export class CiderSocket {
         return `%{A1:${path} ${command}:}${icon}%{A}`;
     }
 
+    showCiderAction(media: string) {
+        return `%{A1:i3-msg '[class="Cider"] scratchpad show':}${media}%{A}`;
+    }
+
     toPolyBar() {
-        const output = `${this.action("-a previous", ICON_PREV)} ${this.action("-a playpause", this.status ? ICON_PAUSE : ICON_PLAY)} ${this.action("-a next", ICON_NEXT)} | ${MEDIA_ICONS["apple"]} ${this.currentMediaString}`;
+        const output = `${this.action("-a previous", ICON_PREV)} ${this.action("-a playpause", this.status ? ICON_PAUSE : ICON_PLAY)} ${this.action("-a next", ICON_NEXT)} | ${MEDIA_ICONS["apple"]} ${this.showCiderAction(this.currentMediaString)}`;
         return output;
     }
 
