@@ -21,8 +21,8 @@ export const getArgv = (argv: Array<any>) => {
             volume: {
                 alias: "v", 
                 type: "number",
-                desc: "Increase/Decrease volume with this increment",
-            },
+                desc: "Increase/Decrease volume with this increment. Use with -a volume",
+            }
         })
         .help()
         .alias('help', 'h')

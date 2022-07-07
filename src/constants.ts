@@ -12,4 +12,4 @@ export const MEDIA_ICONS = {
 };
 export const APP_NAME = "cider-polybar";
 
-export const INFORMATIVE_ACTIONS = ["playpause", "play", "pause", "next", "previous", "get-currentmediaitem", "volume"];
+export const INFORMATIVE_ACTIONS = ["playpause", "play", "pause", "next", "previous", "get-currentmediaitem", "volume", "autoplay"];

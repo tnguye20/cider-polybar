@@ -13,6 +13,7 @@ export class CiderSocket {
     currentMediaArtwork: any
     status: boolean = false
     volume: number = -1
+    autoplay: boolean | null = null
     constructor () {
         this.connection = new WebSocket(SOCKET_URL);
         this.setup();
@@ -41,6 +42,9 @@ export class CiderSocket {
         url = url.replace("{h}", height.toString());
         this.currentMediaArtwork = url;
     }
+    setAutoplay(a: boolean) {
+        this.autoplay = a;
+    }
 
 
     setup() {
@@ -51,6 +55,7 @@ export class CiderSocket {
                     const { albumName, artistName, name, artwork, status, volume, autoplayEnabled } = response.data;
                     this.setStatus(status);
                     this.setVolume(volume);
+                    this.setAutoplay(autoplayEnabled);
                     if (this.songName !== name)  {
                         this.setSongName(name);
                         let { url } = artwork;
@@ -118,21 +123,36 @@ export class CiderSocket {
     }
 
     async adjustVolume(a: number) {
-        await this.waitToConnect(() => this.volume !== -1);
+        const condition = () => this.volume !== -1
+        await this.waitToConnect(condition);
         this.setVolume(this.volume + a);
-        this.connection.send(JSON.stringify({
+        const command = {
             action: "volume",
             volume: this.volume
-        }));
-    }
-
-    async sendCommand(command: {[key:string]: string | number}) {
-        await this.waitToConnect();
+        }
         this.connection.send(JSON.stringify(command));
     }
 
+    async sendCommand(command: {[key:string]: string | number}, condition: () => boolean = () => true) {
+        await this.waitToConnect(condition);
+        this.connection.send(JSON.stringify(command));
+    }
+
+    async toggleAutoplay() {
+        await this.waitToConnect(() => this.autoplay !== null);
+        this.setAutoplay(!this.autoplay);
+        const command = {
+            action: "set-autoplay",
+            autoplay: this.autoplay
+        }
+        console.log(command);
+        this.connection.send(JSON.stringify(command));
+    }
 
     toVolumeStr(): string {
         return `${MEDIA_ICONS["apple"]} Music Volume: ${Math.ceil(this.volume * 100)}%`;
+    }
+    toAutoplayStr(): string {
+        return `${MEDIA_ICONS["apple"]} Autoplay: ${this.autoplay}`;
     }
 }

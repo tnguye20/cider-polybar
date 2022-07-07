@@ -16,12 +16,16 @@ const main = async (argv: ARGV) => {
     const { action, volume } = argv;
 
     const ciderSocket = new CiderSocket();
-
     switch (action) {
         case "volume":
             await ciderSocket.adjustVolume(volume);
             await exec(`notify-send "${ciderSocket.toVolumeStr()}"`)
-            ciderSocket.closeConnection()
+            ciderSocket.closeConnection();
+            break;
+        case "autoplay":
+            await ciderSocket.toggleAutoplay();
+            await exec(`notify-send "${ciderSocket.toAutoplayStr()}"`)
+            ciderSocket.closeConnection();
             break;
         default:
             await ciderSocket.sendCommand({
