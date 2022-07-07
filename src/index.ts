@@ -1,5 +1,5 @@
 const util = require('util');
-const exec = util.promisify(require('child_process').exec);import { WebSocket, MessageEvent, ErrorEvent } from "ws";
+const exec = util.promisify(require('child_process').exec);
 import { exit } from "process";
 import { ARGV, getArgv } from "./argv";
 import { CiderSocket } from "./CiderSocket";
@@ -20,7 +20,6 @@ const main = async (argv: ARGV) => {
     switch (action) {
         case "volume":
             await ciderSocket.adjustVolume(volume);
-            // process.stdout.write(ciderSocket.toVolumeStr());
             await exec(`notify-send "${ciderSocket.toVolumeStr()}"`)
             ciderSocket.closeConnection()
             break;
@@ -34,18 +33,11 @@ const main = async (argv: ARGV) => {
                 return;
             }
 
-            let timer = 10;
-            const i = setInterval(() => {
-                if (timer == 0 || ciderSocket.isError) {
-                    clearInterval(i);
-                }
-                if (ciderSocket.currentMediaString !== "") {
-                    process.stdout.write(ciderSocket.toPolyBar());
-                    clearInterval(i);
-                    ciderSocket.closeConnection()
-                }
-                timer--;
-            }, 200);
+            await ciderSocket.waitToConnect(() => ciderSocket.currentMediaString !== "");
+            if (ciderSocket.currentMediaString !== "") {
+                process.stdout.write(ciderSocket.toPolyBar());
+                ciderSocket.closeConnection()
+            }
 
             break;
     }

@@ -48,7 +48,7 @@ export class CiderSocket {
             const response = JSON.parse(event.data as string);
             switch (response.type) {
                 case "playbackStateUpdate":
-                    const { albumName, artistName, name, artwork, status, volume } = response.data;
+                    const { albumName, artistName, name, artwork, status, volume, autoplayEnabled } = response.data;
                     this.setStatus(status);
                     this.setVolume(volume);
                     if (this.songName !== name)  {
@@ -76,23 +76,6 @@ export class CiderSocket {
         }
     }
 
-    async sendCommand(command: {[key:string]: string | number}) {
-        let timer = 10;
-        return new Promise((resolve, _) => {
-            const i = setInterval(() => {
-                if (timer == 0) {
-                    clearInterval(i);
-                }
-                if (this.connection.readyState === 1) {
-                    this.connection.send(JSON.stringify(command));
-                    clearInterval(i);
-                    resolve(null);
-                }
-                timer--;
-            }, 200);
-        })
-    }
-
     action(command: string, icon: string) {
         let path = `node ${__dirname}/index.js`;
         if (process.env.CIDER_DEV === undefined) {
@@ -106,7 +89,11 @@ export class CiderSocket {
     }
 
     toPolyBar() {
-        const output = `${this.action("-a previous", ICON_PREV)} ${this.action("-a playpause", this.status ? ICON_PAUSE : ICON_PLAY)} ${this.action("-a next", ICON_NEXT)} | ${MEDIA_ICONS["apple"]} ${this.showCiderAction(this.currentMediaString)}`;
+        const output = `${this.action("-a previous", ICON_PREV)} ${this.action("-a playpause", this.status ? ICON_PAUSE : ICON_PLAY)} ${this.action("-a next", ICON_NEXT)} | ${MEDIA_ICONS["apple"]} ${this.showCiderAction(
+                this.currentMediaString.length > 75
+                ? this.currentMediaString.slice(0, 75) + "..."
+                : this.currentMediaString
+            )}`;
         return output;
     }
 
@@ -114,19 +101,14 @@ export class CiderSocket {
         if (this.connection.readyState === 1) this.connection.close();
     }
 
-    adjustVolume(a: number) {
+    async waitToConnect(condition: () => boolean = () => true) {
         let timer = 10;
         return new Promise((resolve, _) => {
             const i = setInterval(() => {
                 if (timer == 0) {
                     clearInterval(i);
                 }
-                if (this.connection.readyState === 1 && this.volume !== -1) {
-                    this.setVolume(this.volume + a)
-                    this.connection.send(JSON.stringify({
-                        action: "volume",
-                        volume: this.volume
-                    }));
+                if (this.connection.readyState === 1 && condition()) {
                     clearInterval(i);
                     resolve(null);
                 }
@@ -134,6 +116,21 @@ export class CiderSocket {
             }, 100);
         })
     }
+
+    async adjustVolume(a: number) {
+        await this.waitToConnect(() => this.volume !== -1);
+        this.setVolume(this.volume + a);
+        this.connection.send(JSON.stringify({
+            action: "volume",
+            volume: this.volume
+        }));
+    }
+
+    async sendCommand(command: {[key:string]: string | number}) {
+        await this.waitToConnect();
+        this.connection.send(JSON.stringify(command));
+    }
+
 
     toVolumeStr(): string {
         return `${MEDIA_ICONS["apple"]} Music Volume: ${Math.ceil(this.volume * 100)}%`;
