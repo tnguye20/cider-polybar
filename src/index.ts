@@ -32,7 +32,7 @@ const main = async (argv: ARGV) => {
                 action: action
             });
 
-            if (action !== "get-currentmediaitem") {
+            if (action !== "get-currentmediaitem" || ciderSocket.isError) {
                 ciderSocket.closeConnection()
                 return;
             }

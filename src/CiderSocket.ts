@@ -112,6 +112,7 @@ export class CiderSocket {
             const i = setInterval(() => {
                 if (timer == 0) {
                     clearInterval(i);
+                    this.closeConnection()
                 }
                 if (this.connection.readyState === 1 && condition()) {
                     clearInterval(i);
