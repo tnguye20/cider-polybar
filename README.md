@@ -1,7 +1,11 @@
 # cider-polybar
 A PolyBar custom script to interact with Cider - An open-source, community-oriented Apple Music
 
-https://user-images.githubusercontent.com/9140437/178784336-2d6d4c94-8d21-4dad-8365-58a18dd41643.mp4
+
+
+https://user-images.githubusercontent.com/9140437/178786041-23196d87-c090-492d-83e5-42115c24413b.mp4
+
+
 
 # Installation
 Download the latest Release package to get the binary for the module. 
