@@ -95,8 +95,8 @@ export class CiderSocket {
 
     toPolyBar() {
         const output = `${this.action("-a previous", ICON_PREV)} ${this.action("-a playpause", this.status ? ICON_PAUSE : ICON_PLAY)} ${this.action("-a next", ICON_NEXT)} | ${MEDIA_ICONS["apple"]} ${this.showCiderAction(
-                this.currentMediaString.length > 75
-                ? this.currentMediaString.slice(0, 75) + "..."
+                this.currentMediaString.length > 50
+                ? this.currentMediaString.slice(0, 50) + "..."
                 : this.currentMediaString
             )}`;
         return output;
