@@ -108,15 +108,16 @@ export class CiderSocket {
 
     async waitToConnect(condition: () => boolean = () => true) {
         let timer = 10;
-        return new Promise((resolve, _) => {
+        return new Promise((resolve, reject) => {
             const i = setInterval(() => {
                 if (timer == 0) {
                     clearInterval(i);
-                    this.closeConnection()
+                    this.closeConnection();
+                    resolve(false);
                 }
                 if (this.connection.readyState === 1 && condition()) {
                     clearInterval(i);
-                    resolve(null);
+                    resolve(true);
                 }
                 timer--;
             }, 100);
@@ -125,29 +126,32 @@ export class CiderSocket {
 
     async adjustVolume(a: number) {
         const condition = () => this.volume !== -1
-        await this.waitToConnect(condition);
-        this.setVolume(this.volume + a);
-        const command = {
-            action: "volume",
-            volume: this.volume
+        if (await this.waitToConnect(condition)) {
+            this.setVolume(this.volume + a);
+            const command = {
+                action: "volume",
+                volume: this.volume
+            }
+            this.connection.send(JSON.stringify(command));
         }
-        this.connection.send(JSON.stringify(command));
     }
 
     async sendCommand(command: {[key:string]: string | number}, condition: () => boolean = () => true) {
-        await this.waitToConnect(condition);
-        this.connection.send(JSON.stringify(command));
+        if (await this.waitToConnect(condition)) {
+            this.connection.send(JSON.stringify(command));
+        }
     }
 
     async toggleAutoplay() {
-        await this.waitToConnect(() => this.autoplay !== null);
-        this.setAutoplay(!this.autoplay);
-        const command = {
-            action: "set-autoplay",
-            autoplay: this.autoplay
+        if (await this.waitToConnect(() => this.autoplay !== null)) {
+            this.setAutoplay(!this.autoplay);
+            const command = {
+                action: "set-autoplay",
+                autoplay: this.autoplay
+            }
+            console.log(command);
+            this.connection.send(JSON.stringify(command));
         }
-        console.log(command);
-        this.connection.send(JSON.stringify(command));
     }
 
     toVolumeStr(): string {
