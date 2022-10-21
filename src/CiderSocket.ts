@@ -52,17 +52,22 @@ export class CiderSocket {
             const response = JSON.parse(event.data as string);
             switch (response.type) {
                 case "playbackStateUpdate":
-                    const { albumName, artistName, name, artwork, status, volume, autoplayEnabled } = response.data;
-                    this.setStatus(status);
-                    this.setVolume(volume);
-                    this.setAutoplay(autoplayEnabled);
-                    if (this.songName !== name)  {
-                        this.setSongName(name);
-                        let { url } = artwork;
-                        if (name && url) {
-                            this.setArtwork(url);
-                            this.setCurrentMediaString(name, artistName, albumName);
+                    if (response.data !== undefined) {
+                        const { albumName, artistName, name, artwork, status, volume, autoplayEnabled } = response.data;
+                        this.setStatus(status);
+                        this.setVolume(volume);
+                        this.setAutoplay(autoplayEnabled);
+                        if (this.songName !== name)  {
+                            this.setSongName(name);
+                            let { url } = artwork;
+                            if (name && url) {
+                                this.setArtwork(url);
+                                this.setCurrentMediaString(name, artistName, albumName);
+                            }
                         }
+                    }
+                    else {
+                        // Do nothing
                     }
                     break;
                 default: 
