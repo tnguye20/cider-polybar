@@ -8,7 +8,7 @@ https://user-images.githubusercontent.com/9140437/178786041-23196d87-c090-492d-8
 
 
 # Installation
-Download the latest Release package to get the binary for the module. 
+Download the latest Release package to get the binary for the module. If you choose to download the binary directly then skip the `untar` step.  
 ```bash
 tar -xvzf <LOCATION>/cider-polybar.tar.gz
 sudo cp cider-polybar /usr/local/bin
@@ -25,7 +25,7 @@ Options:
   -h, --help     Show help                                             [boolean]
 ```
 
-Insert this block inside of polybar config, tweak the interval to your liking. 
+Insert this block inside of polybar config to use the module, tweak the interval to your liking. 
 ```
 ...
 modules-left = bspwm i3 ciderbar
