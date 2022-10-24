@@ -78,10 +78,11 @@ export class CiderSocket {
         this.connection.onerror = (event: ErrorEvent) => {
             this.setError(true);
             if (event.error.code === "ECONNREFUSED") {
-                process.stdout.write("")
+                process.stdout.write("");
             }
             else {
-                process.stdout.write(event.message, event.error);
+                process.stdout.write("");
+                console.log(event.message, event.error);
             }
         }
     }
@@ -108,7 +109,12 @@ export class CiderSocket {
     }
 
     closeConnection() {
-        if (this.connection.readyState === 1) this.connection.close();
+        try {
+            this.connection.terminate();
+        }
+        catch (err) {
+            //
+        }
     }
 
     async waitToConnect(condition: () => boolean = () => true) {
@@ -120,6 +126,7 @@ export class CiderSocket {
                     this.closeConnection();
                     resolve(false);
                 }
+
                 if (this.connection.readyState === 1 && condition()) {
                     clearInterval(i);
                     resolve(true);
@@ -127,6 +134,10 @@ export class CiderSocket {
                 timer--;
             }, 100);
         })
+    }
+
+    hasCurrentMedia () {
+        return this !== undefined && this.currentMediaString !== "";
     }
 
     async adjustVolume(a: number) {
@@ -154,7 +165,6 @@ export class CiderSocket {
                 action: "set-autoplay",
                 autoplay: this.autoplay
             }
-            console.log(command);
             this.connection.send(JSON.stringify(command));
         }
     }

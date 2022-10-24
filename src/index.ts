@@ -37,10 +37,13 @@ const main = async (argv: ARGV) => {
                 return;
             }
 
-            await ciderSocket.waitToConnect(() => ciderSocket.currentMediaString !== "");
+            await ciderSocket.waitToConnect(ciderSocket.hasCurrentMedia);
             if (ciderSocket.currentMediaString !== "") {
                 process.stdout.write(ciderSocket.toPolyBar());
-                ciderSocket.closeConnection()
+                ciderSocket.closeConnection();
+            }
+            else {
+                ciderSocket.closeConnection();
             }
 
             break;
