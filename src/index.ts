@@ -1,4 +1,4 @@
-const util = require('util');
+import * as util from 'util';
 const exec = util.promisify(require('child_process').exec);
 import { exit } from "process";
 import { ARGV, getArgv } from "./argv";

@@ -1,5 +1,5 @@
 import { WebSocket, MessageEvent, ErrorEvent } from "ws";
-import { 
+import {
     ICON_NEXT, ICON_PREV, ICON_PAUSE, ICON_PLAY, MEDIA_ICONS, APP_NAME
 } from './constants';
 const SOCKET_URL = "ws://localhost:26369";
@@ -70,7 +70,7 @@ export class CiderSocket {
                         // Do nothing
                     }
                     break;
-                default: 
+                default:
                     break;
             }
         }
